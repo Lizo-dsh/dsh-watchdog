@@ -4,6 +4,7 @@
  */
 import assert from 'node:assert'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { resolveLaunch, pickShim, resolveShimTarget } from './restart.js'
@@ -14,27 +15,35 @@ const HERE = path.dirname(fileURLToPath(import.meta.url))
 
 // ---- 用例 1：pickShim 优先 .cmd ----
 {
+  // 占位路径，不用任何本机真实布局：这里只验证选择顺序
   const hits = [
-    'C:\\nvm4w\\nodejs\\dsh',      // sh 脚本，where 排第一
-    'C:\\nvm4w\\nodejs\\dsh.cmd',
+    path.join('C:', 'node', 'dsh'),          // 无扩展名，通常排在第一
+    path.join('C:', 'node', 'dsh.cmd'),
   ]
   const picked = pickShim(hits)
   assert.ok(/\.cmd$/i.test(picked), `应优先选 .cmd，实际: ${picked}`)
-  console.log(`PASS 用例1 pickShim → ${picked}`)
+  console.log(`PASS 用例1 pickShim → ${path.basename(picked)}`)
 }
 
-// ---- 用例 2：resolveShimTarget 从真实 shim 解析出存在的 bin.js ----
+// ---- 用例 2：resolveShimTarget 能从 shim 解析出存在的 bin.js ----
+// 用临时目录造一个 shim，不依赖本机 node 安装位置。
 {
-  const shim = 'C:\\nvm4w\\nodejs\\dsh'
-  if (!fs.existsSync(shim)) {
-    console.log('SKIP 用例2 本机无该 shim')
-  } else {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'shim-'))
+  const binDir = path.join(root, 'node_modules', 'dsh', 'lib')
+  fs.mkdirSync(binDir, { recursive: true })
+  const binJs = path.join(binDir, 'bin.js')
+  fs.writeFileSync(binJs, '// fake')
+  const shim = path.join(root, 'dsh')
+  fs.writeFileSync(shim, `#!/bin/sh\nexec node "${binJs}" "$@"\n`)
+  try {
     const r = resolveShimTarget(shim)
     assert.ok(r, '应能解析出目标')
     assert.strictEqual(r.viaShell, false, '直连模式不需要 shell')
     assert.ok(fs.existsSync(r.args[0]), `解析出的 bin.js 必须存在: ${r.args[0]}`)
     assert.ok(/[\\/]bin\.js$/.test(r.args[0]), '目标应是 bin.js')
-    console.log(`PASS 用例2 解析 shim → ${r.args[0]}`)
+    console.log('PASS 用例2 从 shim 解析出 bin.js（临时目录构造）')
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true })
   }
 }
 
