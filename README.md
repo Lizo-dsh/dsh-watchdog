@@ -152,6 +152,22 @@ node test-offline.mjs
 Covers arm/disarm, cross-boot-only delivery, multi-session delivery, retry-to-give-up,
 both `resolveAgent` shapes, empty-list idling, missing-service safety, and the master switch.
 
+## Restarting the host
+
+This plugin wakes a Session *after* a restart; it does not restart anything itself. For the
+other half there are two scripts in [`tools/`](tools/README.md):
+
+```bash
+node tools/launch.js                  # restart, replacement opens in a visible console
+node tools/launch.js --delay 25000    # give the current turn longer to finish
+```
+
+They stop the host, wait for the port to be released, reopen the host in a new console window,
+and report success only once the port has answered for 8 seconds. Measured end to end:
+**7.1 seconds** from start to a serving port.
+
+Windows only — the detachment relies on WMI.
+
 ## Known limits
 
 - Delivers only to Sessions that still exist. An archived Session fails to resolve and is
