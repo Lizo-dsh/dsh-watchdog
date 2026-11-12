@@ -34,11 +34,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lizo233/dsh-watchdog.git"
+    "url": "git+https://github.com/Lizo-dsh/dsh-watchdog.git"
   },
-  "homepage": "https://github.com/Lizo233/dsh-watchdog#readme",
+  "homepage": "https://github.com/Lizo-dsh/dsh-watchdog#readme",
   "bugs": {
-    "url": "https://github.com/Lizo233/dsh-watchdog/issues"
+    "url": "https://github.com/Lizo-dsh/dsh-watchdog/issues"
   },
   "engines": {
     "node": "^22.19 || >=24"
