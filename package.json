@@ -1,0 +1,51 @@
+{
+  "name": "dsh-watchdog",
+  "version": "0.1.0",
+  "description": "Boot-time session waker for DeepSeek Harness: a model arms its own Session, and after the host restarts the plugin delivers one wake-up message to it, then unregisters it.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": {
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "watchdog",
+    "restart",
+    "session",
+    "wake"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lizo233/dsh-watchdog.git"
+  },
+  "homepage": "https://github.com/Lizo233/dsh-watchdog#readme",
+  "bugs": {
+    "url": "https://github.com/Lizo233/dsh-watchdog/issues"
+  },
+  "engines": {
+    "node": "^22.19 || >=24"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-llm": ">=0.2.2-rc.1 <0.2.3-0",
+    "@deepseek-ai/schemastery": ">=3.0.0 <4.0.0"
+  },
+  "license": "MIT"
+}
